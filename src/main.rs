@@ -25,6 +25,8 @@ fn is_transient_error(e1: &(dyn std::error::Error + 'static)) -> bool {
         }
     }
 
+    todo!("Actually detect DNS or TCP failure");
+
     if let Some(e5) = e1.source() {
         print!("{}: {}\n",std::any::type_name_of_val(e5), &e5);
         return is_transient_error(e5)
