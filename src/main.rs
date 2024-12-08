@@ -1,14 +1,14 @@
 use reqwest::blocking::ClientBuilder;
-use anyhow::{Result, Error as AnyError};
+use anyhow::Result;
 use reqwest::Error as ReqError;
 use std::error::Error as StdError;
 
-fn main() {
-    
-    assert!(!is_transient_result(&ping("https://httpbin.spirenteng.com/meh")), "HTTP 404 is expected");
-    assert!(!is_transient_result(&ping("https://httpbin.spirenteng.com/get")), "HTTP 200 is expected");
+fn main() -> Result<()> {
+    assert!(!is_transient_result(&ping("https://google.com/meh")), "HTTP 404 is expected");
+    assert!(!is_transient_result(&ping("https://google.com/")), "HTTP 200 is expected");
     assert!(is_transient_result(&ping("https://unknown_host1.com/meh")), "DNS failure is expected");
     assert!(is_transient_result(&ping("https://240.0.0.1/meh")), "Connection failure is expected");
+    return Ok(())
 }
 
 fn is_transient_result(result: &Result<String>) -> bool {
