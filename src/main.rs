@@ -19,16 +19,22 @@ fn is_transient_result(result: &Result<String>) -> bool {
 }
 
 fn is_transient_error(e1: &(dyn std::error::Error + 'static)) -> bool {
-    if let Some(&e3) = e1.downcast_ref::<&ReqError>() {
+    print!("{}: {}\n", std::any::type_name_of_val(e1), &e1);
+
+    if let Some::<&ReqError>(e3) = e1.downcast_ref::<ReqError>() {
+        println!("Downcasted to ReqError\n");
+        if e3.is_timeout() {
+            return true;
+        }
+        if e3.is_connect() {
+            return true;
+        }
         if let Some(source) =  e3.source() {
-            return is_transient_error(&source);
+            return is_transient_error(source);
         }
     }
-
-    todo!("Actually detect DNS or TCP failure");
-
+    
     if let Some(e5) = e1.source() {
-        print!("{}: {}\n",std::any::type_name_of_val(e5), &e5);
         return is_transient_error(e5)
     }
     
