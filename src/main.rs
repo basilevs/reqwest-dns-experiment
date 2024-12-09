@@ -1,5 +1,5 @@
 use reqwest::blocking::ClientBuilder;
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use reqwest::Error as ReqError;
 use std::error::Error as StdError;
 
@@ -18,8 +18,8 @@ fn is_transient_result(result: &Result<String>) -> bool {
     }
 }
 
-fn is_transient_error(e1: &(dyn std::error::Error + 'static)) -> bool {
-    print!("{}: {}\n", std::any::type_name_of_val(e1), &e1);
+fn is_transient_error(e1: &(dyn StdError + 'static)) -> bool {
+    print!("{}: {}\n", std::any::type_name_of_val(e1), e1);
 
     if let Some::<&ReqError>(e3) = e1.downcast_ref::<ReqError>() {
         println!("Downcasted to ReqError\n");
@@ -33,7 +33,7 @@ fn is_transient_error(e1: &(dyn std::error::Error + 'static)) -> bool {
             return is_transient_error(source);
         }
     }
-    
+
     if let Some(e5) = e1.source() {
         return is_transient_error(e5)
     }
